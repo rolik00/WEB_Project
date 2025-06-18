@@ -6,7 +6,7 @@ const ArticleList = () => {
 
   useEffect(() => {
     const fetchArticles = async () => {
-      const response = await axios.get('/api/articles');
+      const response = await axios.get('/api/articles'); // тут ты обращаешься к конкретному файлу, например для создания (запрос post): api/articles/create
       setArticles(response.data);
     };
 
