@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { query } from '../../../lib/db';
+import { hash } from 'bcryptjs';
 
 interface RegisterRequest extends NextApiRequest {
   body: {
@@ -28,9 +29,11 @@ export default async function handler(req: RegisterRequest, res: NextApiResponse
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    const hashedPassword = await hash(password, 12);
+
     const newUser = await query<User>(
       'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email',
-      [name, email, password]
+      [name, email, hashedPassword]
     );
 
     res.status(201).json(newUser.rows[0]);
