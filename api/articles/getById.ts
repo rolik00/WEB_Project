@@ -6,6 +6,7 @@ interface Article {
   title: string;
   content: string;
   author_id: number;
+  author_name: string;
   created_at?: Date;
 }
 
@@ -26,7 +27,8 @@ export default async function handler(req: GetByIdRequest, res: NextApiResponse<
   }
 
   try {
-    const result = await query<Article>('SELECT * FROM articles WHERE id = $1', [id]);
+    const result = await query<Article>(`SELECT a.id, a.title, a.content, a.author_id, u.name as author_name, a.created_at 
+      FROM articles a JOIN users u ON a.author_id = u.id WHERE a.id = $1`, [id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Article not found' });
     }
