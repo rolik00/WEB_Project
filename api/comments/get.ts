@@ -5,6 +5,7 @@ interface Comment {
   id: number;
   article_id: number;
   user_id: number;
+  author_name: string;
   body: string;
   created_at?: Date;
   parent_id?: number | null;
@@ -27,7 +28,8 @@ export default async function handler(req: GetCommentsRequest, res: NextApiRespo
   }
 
   try {
-    const comments = await query<Comment>('SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at ASC', [id]);
+    const comments = await query<Comment>(`SELECT c.id, c.article_id,c.user_id, u.name as user_name, c.body, c.created_at, c.parent_id FROM comments c
+      JOIN users u ON c.user_id = u.id WHERE c.article_id = $1 ORDER BY c.created_at ASC`, [id]);
     res.status(200).json(comments.rows);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
